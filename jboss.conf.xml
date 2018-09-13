@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+  <JBOSS>
+    <JBOSS_HOME>E:\Company\digiwin\Program\Develop\test_environment\JBOSS\JBOSS_8130\SFT\JBoss</JBOSS_HOME>
+    <PORT>8130</PORT>
+    <COMPANY_NAME>合鎰</COMPANY_NAME>
+  </JBOSS>
+  <JBOSS>
+    <JBOSS_HOME>E:\Company\digiwin\Program\Develop\test_environment\JBOSS\JBOSS_8110\SFT\JBoss</JBOSS_HOME>
+    <PORT>8110</PORT>
+    <COMPANY_NAME>晉椿</COMPANY_NAME>
+  </JBOSS>
+</config>
