@@ -13,6 +13,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileSystemView;
 import model.CmdProxy;
 import model.CompanyConfig;
 import model.CompanyConfigManager;
@@ -151,7 +152,6 @@ public class MainPage extends javax.swing.JFrame {
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel2.setText("Patch路徑：");
 
-        patchPath.setEditable(false);
         patchPath.setFont(new java.awt.Font("微軟正黑體", 0, 15)); // NOI18N
 
         addBtn.setFont(new java.awt.Font("微軟正黑體", 0, 18)); // NOI18N
@@ -368,26 +368,27 @@ public class MainPage extends javax.swing.JFrame {
     private void switchBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_switchBtnActionPerformed
         swtichFN();
     }//GEN-LAST:event_switchBtnActionPerformed
-    //預覽patch包路徑
+//預覽patch包路徑
     private void browseBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseBtnActionPerformed
         File file = null;
         try {
-            CompanyConfig config = CompanyConfigManager.getCompanyConfig();
-            JFileChooser fileChooser = fileChooser = new JFileChooser();
-            if (!config.getPatchPath().isEmpty()) {
-                String path = config.getPatchPath();
-                File sourceFilePath = new File(path.substring(0, path.lastIndexOf('\\')));
-                if (sourceFilePath.exists()) {
-                    fileChooser.setCurrentDirectory(sourceFilePath);
-                }
-                fileChooser.setDialogTitle("請選擇patch包");
-                fileChooser.setFileFilter(new FileNameExtensionFilter("patch.exe", "exe"));
+            File sourceFile = getDirectoryFile(patchPath.getText()); //介面路徑
+            if (sourceFile == null || !sourceFile.exists()) {
+                sourceFile = getDirectoryFile("");  // 使用者預設路徑
+            }
+            if (sourceFile == null || !sourceFile.exists()) {
+                sourceFile = FileSystemView.getFileSystemView().getHomeDirectory(); // 最後才取桌面路径
             }
 
-            int returnVal = fileChooser.showOpenDialog(this);
-            if (returnVal == JFileChooser.APPROVE_OPTION) {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("請選擇patch包");
+            fileChooser.setFileFilter(new FileNameExtensionFilter("patch.exe", "exe"));
+            fileChooser.setCurrentDirectory(sourceFile);
+
+            if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 file = fileChooser.getSelectedFile();
                 if (file != null) {
+                    CompanyConfig config = CompanyConfigManager.getCompanyConfig();
                     config.setPatchPath(file.getPath());
                     CompanyConfigManager.getInstance().updateCompanyConfig(config, "add"); //暫存最近選的patch路徑
                     patchPath.setText(file.getPath());
@@ -397,6 +398,20 @@ public class MainPage extends javax.swing.JFrame {
             ex.printStackTrace();
         }
     }//GEN-LAST:event_browseBtnActionPerformed
+    //取得路徑，不存在則取的空字串
+    private File getDirectoryFile(String path) {
+        File directoryFile = null;
+        File file = new File(path);
+        if (file.exists()) {
+            if (file.isDirectory()) {
+                directoryFile = file;
+            } else if (file.isFile()) {
+                directoryFile = new File(path.substring(0, path.lastIndexOf('\\')));
+            }
+        }
+        return directoryFile;
+    }
+
     //新增公司別
     private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
         new AddCompanyPage().setVisible(true);
@@ -431,7 +446,7 @@ public class MainPage extends javax.swing.JFrame {
     }//GEN-LAST:event_companyComboItemStateChanged
     //選擇JBOSS
     private void jBossListMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jBossListMousePressed
-         if (JBossConfigManager.getJbossConfig() == null) {
+        if (JBossConfigManager.getJbossConfig() == null) {
             try {
                 JBossConfig config = JBossConfigManager.getJBossConfigMap(String.valueOf(jBossList.getSelectedValue()));
                 JBossConfigManager.setJbossConfig(config);
@@ -467,7 +482,7 @@ public class MainPage extends javax.swing.JFrame {
             ex.printStackTrace();
         }
     }
-    
+
     private void initJBossList() throws Exception {
         loadJBossList();
     }
@@ -522,7 +537,7 @@ public class MainPage extends javax.swing.JFrame {
                         }
                     }
                 }).start();
-            }else{
+            } else {
                 throw new Exception(msg);
             }
         } catch (Exception ex) {
@@ -553,14 +568,14 @@ public class MainPage extends javax.swing.JFrame {
         companyCombo.setEnabled(b);
         jBossList.setEnabled(b);
     }
-    
-    private String beforeSwitchCheck(){
+
+    private String beforeSwitchCheck() {
         String msg = "";
-        if(jBossList.getSelectedIndex() == -1){
+        if (jBossList.getSelectedIndex() == -1) {
             msg = "尚未切換 JBoss 的 Port 號!";
-        }else if(companyCombo.getSelectedIndex() == -1){
+        } else if (companyCombo.getSelectedIndex() == -1) {
             msg = "尚未選擇公司別!";
-        }else if(patchPath.getText().isEmpty() || patchPath.getText().equals("")){
+        } else if (patchPath.getText().isEmpty() || patchPath.getText().equals("")) {
             msg = "尚未選擇 patch 路徑!";
         }
         return msg;

@@ -12,7 +12,8 @@ import view.MainPage;
  * @author user
  */
 public class SFTSwtichLite {
-        /**
+
+    /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
@@ -22,12 +23,13 @@ public class SFTSwtichLite {
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
+            //            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+            //                if ("Nimbus".equals(info.getName())) {
+            //                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+            //                    break;
+            //                }
+            //            }
+            javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException ex) {
             java.util.logging.Logger.getLogger(MainPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
