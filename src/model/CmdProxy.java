@@ -27,6 +27,7 @@ public class CmdProxy {
             input = new BufferedReader(new InputStreamReader(p.getInputStream(), "BIG5")); //CMD編碼預設為BIG5
             while ((line = input.readLine()) != null) {
                 System.out.println(line);
+                SFTSwitchLogger.doLog(line);
             }
             input.close();
         } catch (Exception ex) {

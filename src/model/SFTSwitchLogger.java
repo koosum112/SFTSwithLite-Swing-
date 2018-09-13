@@ -14,5 +14,6 @@ import view.MainPage;
 public class SFTSwitchLogger{
     public static void doLog(String msg) {
        MainPage.outputTextArea.append(msg + "\n");
+       MainPage.outputTextArea.setCaretPosition(MainPage.outputTextArea.getDocument().getLength());
     }
 }
