@@ -6,19 +6,13 @@
 package view;
 
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
-import model.CompanyConfig;
-import model.CompanyConfigManager;
 import model.JBossConfig;
 import model.JBossConfigManager;
 import net.sf.json.JSONObject;
-import static view.MainPage.companyCombo;
 
 /**
  *
@@ -162,7 +156,7 @@ public class AddJBossPage extends javax.swing.JFrame {
     private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
         this.dispose();
     }//GEN-LAST:event_cancelBtnActionPerformed
-
+    //儲存
     private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
         try {
             JSONObject jbossJson = new JSONObject();
@@ -184,7 +178,7 @@ public class AddJBossPage extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "錯誤", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_addBtnActionPerformed
-
+    //瀏覽資料夾
     private void browseBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseBtnActionPerformed
         File file = null;
         try {

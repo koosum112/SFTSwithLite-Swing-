@@ -263,8 +263,8 @@ public class MainPage extends javax.swing.JFrame {
         jBossList.setFont(new java.awt.Font("微軟正黑體", 0, 18)); // NOI18N
         jBossList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         jBossList.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jBossListMouseClicked(evt);
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jBossListMousePressed(evt);
             }
         });
         jScrollPane1.setViewportView(jBossList);
@@ -364,23 +364,21 @@ public class MainPage extends javax.swing.JFrame {
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jMenuItem1ActionPerformed
-
+    //切換
     private void switchBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_switchBtnActionPerformed
         swtichFN();
     }//GEN-LAST:event_switchBtnActionPerformed
-
+    //預覽patch包路徑
     private void browseBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseBtnActionPerformed
         File file = null;
         try {
             CompanyConfig config = CompanyConfigManager.getCompanyConfig();
-            JFileChooser fileChooser = null;
+            JFileChooser fileChooser = fileChooser = new JFileChooser();
             if (!config.getPatchPath().isEmpty()) {
                 String path = config.getPatchPath();
                 File sourceFilePath = new File(path.substring(0, path.lastIndexOf('\\')));
                 if (sourceFilePath.exists()) {
-                    fileChooser = new JFileChooser(sourceFilePath);
-                } else {
-                    fileChooser = new JFileChooser();
+                    fileChooser.setCurrentDirectory(sourceFilePath);
                 }
                 fileChooser.setDialogTitle("請選擇patch包");
                 fileChooser.setFileFilter(new FileNameExtensionFilter("patch.exe", "exe"));
@@ -392,17 +390,18 @@ public class MainPage extends javax.swing.JFrame {
                 if (file != null) {
                     config.setPatchPath(file.getPath());
                     CompanyConfigManager.getInstance().updateCompanyConfig(config, "add"); //暫存最近選的patch路徑
+                    patchPath.setText(file.getPath());
                 }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }//GEN-LAST:event_browseBtnActionPerformed
-
+    //新增公司別
     private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
         new AddCompanyPage().setVisible(true);
     }//GEN-LAST:event_addBtnActionPerformed
-
+    //刪除公司別
     private void delBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_delBtnActionPerformed
         try {
             CompanyConfig config = CompanyConfigManager.getCompanyConfig();
@@ -418,10 +417,9 @@ public class MainPage extends javax.swing.JFrame {
     private void settingBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingBtnActionPerformed
         new AddJBossPage().setVisible(true);
     }//GEN-LAST:event_settingBtnActionPerformed
-
+    //選擇公司別
     private void companyComboItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_companyComboItemStateChanged
         if (evt.getStateChange() == ItemEvent.SELECTED) {
-            String path;
             try {
                 CompanyConfig c_config = CompanyConfigManager.getCompanyConfigMap(String.valueOf(companyCombo.getItemAt(companyCombo.getSelectedIndex())));
                 CompanyConfigManager.setCompanyConfig(c_config);
@@ -431,9 +429,9 @@ public class MainPage extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_companyComboItemStateChanged
-//選擇JBOSS
-    private void jBossListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jBossListMouseClicked
-        if (JBossConfigManager.getJbossConfig() == null) {
+    //選擇JBOSS
+    private void jBossListMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jBossListMousePressed
+         if (JBossConfigManager.getJbossConfig() == null) {
             try {
                 JBossConfig config = JBossConfigManager.getJBossConfigMap(String.valueOf(jBossList.getSelectedValue()));
                 JBossConfigManager.setJbossConfig(config);
@@ -458,8 +456,8 @@ public class MainPage extends javax.swing.JFrame {
                 }
             }
         }
-    }//GEN-LAST:event_jBossListMouseClicked
-
+    }//GEN-LAST:event_jBossListMousePressed
+    //系統初始化
     private void initSystem() {
         try {
             CompanyConfigManager.init();
@@ -469,7 +467,7 @@ public class MainPage extends javax.swing.JFrame {
             ex.printStackTrace();
         }
     }
-
+    
     private void initJBossList() throws Exception {
         loadJBossList();
     }
@@ -494,36 +492,39 @@ public class MainPage extends javax.swing.JFrame {
 
     private void swtichFN() {
         try {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    SwitchProcessor sp = new SwitchProcessor();
-                    CompanyConfigManager ccm = CompanyConfigManager.getInstance();
-                    try {
-                        waitDialog.setVisible(true);
-                        setBtnEnabled(false);
-                        String result = sp.doSwitch(CompanyConfigManager.getCompanyConfig());
-                        waitDialog.dispose();
-                        setBtnEnabled(true);
-                        if (result.equals("")) {
-                            JBossConfig config = JBossConfigManager.getJbossConfig();
-                            config.setCOMPANY_NAME(String.valueOf(companyCombo.getItemAt(companyCombo.getSelectedIndex())));
-                            JBossConfigManager.getInstance().updateJBossConfig(config, "add"); //暫存最近選的公司別
+            String msg = beforeSwitchCheck();
+            if (msg.isEmpty()) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        SwitchProcessor sp = new SwitchProcessor();
+                        CompanyConfigManager ccm = CompanyConfigManager.getInstance();
+                        try {
+                            waitDialog.setVisible(true);
+                            setBtnEnabled(false);
+                            String result = sp.doSwitch(CompanyConfigManager.getCompanyConfig());
+                            waitDialog.dispose();
+                            setBtnEnabled(true);
+                            if (result.equals("")) {
+                                JBossConfig config = JBossConfigManager.getJbossConfig();
+                                config.setCOMPANY_NAME(String.valueOf(companyCombo.getItemAt(companyCombo.getSelectedIndex())));
+                                JBossConfigManager.getInstance().updateJBossConfig(config, "add"); //暫存最近選的公司別
 
-                            JOptionPane.showMessageDialog(new JFrame(), "切換完成", "成功", JOptionPane.INFORMATION_MESSAGE);
-                            if (JOptionPane.showConfirmDialog(new JFrame(), "是否要啟動SFT環境?") == JOptionPane.OK_OPTION) {
-                                doRunbat();
+                                JOptionPane.showMessageDialog(new JFrame(), "切換完成", "成功", JOptionPane.INFORMATION_MESSAGE);
+                                if (JOptionPane.showConfirmDialog(new JFrame(), "是否要啟動SFT環境?") == JOptionPane.OK_OPTION) {
+                                    doRunbat();
+                                }
+                            } else {
+                                JOptionPane.showMessageDialog(new JFrame(), "切換失敗：" + result, "錯誤", JOptionPane.ERROR_MESSAGE);
                             }
-                        } else {
-                            JOptionPane.showMessageDialog(new JFrame(), "切換失敗：" + result, "錯誤", JOptionPane.ERROR_MESSAGE);
+                        } catch (Exception ex) {
+                            JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "錯誤", JOptionPane.ERROR_MESSAGE);
                         }
-                    } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "錯誤", JOptionPane.ERROR_MESSAGE);
                     }
-
-                }
-
-            }).start();
+                }).start();
+            }else{
+                throw new Exception(msg);
+            }
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "錯誤", JOptionPane.ERROR_MESSAGE);
         }
@@ -536,11 +537,10 @@ public class MainPage extends javax.swing.JFrame {
     private void doRunbat() {
         String jboss_home = JBossConfigManager.getJbossConfig().getJBOSS_HOME();
         String title = companyCombo.getItemAt(companyCombo.getSelectedIndex()) + "_" + jBossList.getSelectedValue();
-//        CmdProxy.callCmd("start \"" + companyIdCombo.getValue() + "_自動切換環境\" " + jboss_home + "\\bin\\run.bat");
         try {
             CmdProxy.callCmd("cmd.exe /c start \"" + title + "\" " + jboss_home + "\\bin\\run.bat");
         } catch (Exception ex) {
-//            MessageDialog.showAlert("SFT啟動失敗：" + ex.getMessage());
+            JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "錯誤", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -552,6 +552,18 @@ public class MainPage extends javax.swing.JFrame {
         delBtn.setEnabled(b);
         companyCombo.setEnabled(b);
         jBossList.setEnabled(b);
+    }
+    
+    private String beforeSwitchCheck(){
+        String msg = "";
+        if(jBossList.getSelectedIndex() == -1){
+            msg = "尚未切換 JBoss 的 Port 號!";
+        }else if(companyCombo.getSelectedIndex() == -1){
+            msg = "尚未選擇公司別!";
+        }else if(patchPath.getText().isEmpty() || patchPath.getText().equals("")){
+            msg = "尚未選擇 patch 路徑!";
+        }
+        return msg;
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addBtn;

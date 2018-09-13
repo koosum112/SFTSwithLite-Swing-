@@ -200,7 +200,7 @@ public class AddCompanyPage extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    //儲存公司別
     private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
          try {
             JSONObject companyJson = new JSONObject();
@@ -215,6 +215,7 @@ public class AddCompanyPage extends javax.swing.JFrame {
                 CompanyConfigManager ccm = CompanyConfigManager.getInstance();
                 ccm.updateCompanyConfig(new CompanyConfig(companyJson), "add");
                 MainPage.loadComboBoxData();
+                MainPage.companyCombo.setSelectedItem(companyName.getText());
                 this.dispose();
             } else {
                 throw new Exception(msg);
