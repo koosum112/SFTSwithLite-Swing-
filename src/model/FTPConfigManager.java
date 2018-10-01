@@ -9,6 +9,6 @@ package model;
  *
  * @author user
  */
-public class SystemProperties {
-    final static String VERSION = "1.0.0.2018100101";
+public class FTPConfigManager {
+    
 }

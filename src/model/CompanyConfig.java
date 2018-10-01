@@ -12,22 +12,25 @@ import net.sf.json.JSONObject;
  * @author user
  */
 public class CompanyConfig {
+
     private String companyName = "";
     private String address = "";
     private String account = "";
     private String password = "";
     private String SFTSYS = "";
     private String patchPath = "";
+    private String ftpPath = "";
 
-    public CompanyConfig(String companyName, String address, String account, String password, String SFTSYS, String patchPath) {
+    public CompanyConfig(String companyName, String address, String account, String password, String SFTSYS, String patchPath, String ftpPath) {
         this.companyName = companyName;
         this.address = address;
         this.account = account;
         this.password = password;
         this.SFTSYS = SFTSYS;
         this.patchPath = patchPath;
+        this.ftpPath = ftpPath;
     }
-    
+
     public CompanyConfig(JSONObject json) {
         this.companyName = json.getString("companyName");
         this.address = json.getString("address");
@@ -35,6 +38,7 @@ public class CompanyConfig {
         this.password = json.getString("password");
         this.SFTSYS = json.getString("SFTSYS");
         this.patchPath = json.getString("patchPath");
+        this.ftpPath = json.getString("ftpPath");
     }
 
     public CompanyConfig() {
@@ -79,12 +83,20 @@ public class CompanyConfig {
     public void setSFTSYS(String SFTSYS) {
         this.SFTSYS = SFTSYS;
     }
-    
+
     public String getPatchPath() {
         return patchPath;
     }
 
     public void setPatchPath(String patchPath) {
         this.patchPath = patchPath;
+    }
+
+    public String getFtpPath() {
+        return ftpPath;
+    }
+
+    public void setFtpPath(String ftpPath) {
+        this.ftpPath = ftpPath;
     }
 }

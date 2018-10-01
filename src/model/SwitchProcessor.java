@@ -10,7 +10,7 @@ import java.util.Iterator;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.apache.commons.io.FileUtils;
-import view.MainPage;
+import controller.MainPage;
 
 /**
  *

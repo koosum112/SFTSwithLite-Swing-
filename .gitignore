@@ -10,3 +10,5 @@ system.properties
 nullTEMP/
 nbproject/
 deployEXE/
+company.conf.xml
+jboss.conf.xml

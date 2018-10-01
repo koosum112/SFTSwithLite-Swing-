@@ -5,7 +5,7 @@
  */
 package model;
 
-import view.MainPage;
+import controller.MainPage;
 
 /**
  *

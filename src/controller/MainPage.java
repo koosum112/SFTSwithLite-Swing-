@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package view;
+package controller;
 
 import java.awt.event.ItemEvent;
 import java.io.File;
@@ -47,6 +47,8 @@ public class MainPage extends javax.swing.JFrame {
         waitDialog = new javax.swing.JDialog();
         jPanel5 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
+        jBossListPopupMenu = new javax.swing.JPopupMenu();
+        switchItem = new javax.swing.JMenuItem();
         mainPanel = new javax.swing.JPanel();
         jSplitPane1 = new javax.swing.JSplitPane();
         jSplitPane2 = new javax.swing.JSplitPane();
@@ -64,6 +66,7 @@ public class MainPage extends javax.swing.JFrame {
         switchBtn = new javax.swing.JButton();
         delBtn = new javax.swing.JButton();
         companyCombo = new javax.swing.JComboBox();
+        ftpBtn = new javax.swing.JButton();
         jSplitPane3 = new javax.swing.JSplitPane();
         jPanel1 = new javax.swing.JPanel();
         settingBtn = new javax.swing.JButton();
@@ -110,10 +113,17 @@ public class MainPage extends javax.swing.JFrame {
             .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
+        switchItem.setText("啟動目前的JBOSS");
+        switchItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                switchItemActionPerformed(evt);
+            }
+        });
+        jBossListPopupMenu.add(switchItem);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("SFTSwitchLite");
         setLocation(new java.awt.Point(350, 200));
-        setPreferredSize(new java.awt.Dimension(1151, 700));
         setResizable(false);
 
         mainPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
@@ -125,7 +135,7 @@ public class MainPage extends javax.swing.JFrame {
         jSplitPane2.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         jSplitPane2.setMaximumSize(new java.awt.Dimension(80, 95));
 
-        jSplitPane5.setDividerLocation(455);
+        jSplitPane5.setDividerLocation(485);
         jSplitPane5.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
         outputTextArea.setEditable(false);
@@ -152,7 +162,7 @@ public class MainPage extends javax.swing.JFrame {
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel2.setText("Patch路徑：");
 
-        patchPath.setFont(new java.awt.Font("微軟正黑體", 0, 15)); // NOI18N
+        patchPath.setFont(new java.awt.Font("微軟正黑體", 0, 14)); // NOI18N
 
         addBtn.setFont(new java.awt.Font("微軟正黑體", 0, 18)); // NOI18N
         addBtn.setText("新增");
@@ -193,6 +203,14 @@ public class MainPage extends javax.swing.JFrame {
             }
         });
 
+        ftpBtn.setFont(new java.awt.Font("微軟正黑體", 0, 18)); // NOI18N
+        ftpBtn.setText("FTP");
+        ftpBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ftpBtnActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -213,7 +231,9 @@ public class MainPage extends javax.swing.JFrame {
                         .addGap(135, 135, 135))
                     .addComponent(patchPath, javax.swing.GroupLayout.PREFERRED_SIZE, 491, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(browseBtn)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(browseBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(ftpBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(40, 40, 40)
                 .addComponent(switchBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -223,9 +243,9 @@ public class MainPage extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(switchBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(ftpBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(companyCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -236,7 +256,8 @@ public class MainPage extends javax.swing.JFrame {
                             .addComponent(browseBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(patchPath, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                .addComponent(patchPath, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addComponent(switchBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -262,9 +283,13 @@ public class MainPage extends javax.swing.JFrame {
 
         jBossList.setFont(new java.awt.Font("微軟正黑體", 0, 18)); // NOI18N
         jBossList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        jBossList.setComponentPopupMenu(jBossListPopupMenu);
         jBossList.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 jBossListMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jBossListMouseReleased(evt);
             }
         });
         jScrollPane1.setViewportView(jBossList);
@@ -370,32 +395,38 @@ public class MainPage extends javax.swing.JFrame {
     }//GEN-LAST:event_switchBtnActionPerformed
 //預覽patch包路徑
     private void browseBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseBtnActionPerformed
-        File file = null;
+
         try {
-            File sourceFile = getDirectoryFile(patchPath.getText()); //介面路徑
-            if (sourceFile == null || !sourceFile.exists()) {
-                sourceFile = getDirectoryFile("");  // 使用者預設路徑
-            }
-            if (sourceFile == null || !sourceFile.exists()) {
-                sourceFile = FileSystemView.getFileSystemView().getHomeDirectory(); // 最後才取桌面路径
-            }
-
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("請選擇patch包");
-            fileChooser.setFileFilter(new FileNameExtensionFilter("patch.exe", "exe"));
-            fileChooser.setCurrentDirectory(sourceFile);
-
-            if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-                file = fileChooser.getSelectedFile();
-                if (file != null) {
-                    CompanyConfig config = CompanyConfigManager.getCompanyConfig();
-                    config.setPatchPath(file.getPath());
-                    CompanyConfigManager.getInstance().updateCompanyConfig(config, "add"); //暫存最近選的patch路徑
-                    patchPath.setText(file.getPath());
+            String msg = beforeSwitchCheck();
+            if (msg.isEmpty()) {
+                File file = null;
+                File sourceFile = getDirectoryFile(patchPath.getText()); //介面路徑
+                if (sourceFile == null || !sourceFile.exists()) {
+                    sourceFile = getDirectoryFile("");  // 使用者預設路徑
                 }
+                if (sourceFile == null || !sourceFile.exists()) {
+                    sourceFile = FileSystemView.getFileSystemView().getHomeDirectory(); // 最後才取桌面路径
+                }
+
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("請選擇patch包");
+                fileChooser.setFileFilter(new FileNameExtensionFilter("patch.exe", "exe"));
+                fileChooser.setCurrentDirectory(sourceFile);
+
+                if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+                    file = fileChooser.getSelectedFile();
+                    if (file != null) {
+                        CompanyConfig config = CompanyConfigManager.getCompanyConfig();
+                        config.setPatchPath(file.getPath());
+                        CompanyConfigManager.getInstance().updateCompanyConfig(config, "add"); //暫存最近選的patch路徑
+                        patchPath.setText(file.getPath());
+                    }
+                }
+            } else {
+                throw new Exception(msg);
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "錯誤", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_browseBtnActionPerformed
     //取得路徑，不存在則取的空字串
@@ -472,6 +503,29 @@ public class MainPage extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_jBossListMousePressed
+
+    private void ftpBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ftpBtnActionPerformed
+        try {
+            String msg = beforeSwitchCheck();
+            if (msg.isEmpty()) {
+                new FtpFileChooserPage().setVisible(true);
+            } else {
+                throw new Exception(msg);
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "錯誤", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_ftpBtnActionPerformed
+
+    private void switchItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_switchItemActionPerformed
+        doRunbat();
+    }//GEN-LAST:event_switchItemActionPerformed
+
+    private void jBossListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jBossListMouseReleased
+        if (evt.isPopupTrigger()) {
+            jBossListPopupMenu.show(this, evt.getX(), evt.getY());
+        }
+    }//GEN-LAST:event_jBossListMouseReleased
     //系統初始化
     private void initSystem() {
         try {
@@ -513,7 +567,6 @@ public class MainPage extends javax.swing.JFrame {
                     @Override
                     public void run() {
                         SwitchProcessor sp = new SwitchProcessor();
-                        CompanyConfigManager ccm = CompanyConfigManager.getInstance();
                         try {
                             waitDialog.setVisible(true);
                             setBtnEnabled(false);
@@ -567,6 +620,7 @@ public class MainPage extends javax.swing.JFrame {
         delBtn.setEnabled(b);
         companyCombo.setEnabled(b);
         jBossList.setEnabled(b);
+        ftpBtn.setEnabled(b);           
     }
 
     private String beforeSwitchCheck() {
@@ -585,7 +639,9 @@ public class MainPage extends javax.swing.JFrame {
     private javax.swing.JButton browseBtn;
     public static javax.swing.JComboBox companyCombo;
     private javax.swing.JButton delBtn;
+    private javax.swing.JButton ftpBtn;
     public static javax.swing.JList jBossList;
+    private javax.swing.JPopupMenu jBossListPopupMenu;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -606,10 +662,11 @@ public class MainPage extends javax.swing.JFrame {
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JPanel mainPanel;
     public static javax.swing.JTextArea outputTextArea;
-    private javax.swing.JTextField patchPath;
+    public static javax.swing.JTextField patchPath;
     public static javax.swing.JProgressBar progressBar;
     private javax.swing.JButton settingBtn;
-    private javax.swing.JButton switchBtn;
+    public static javax.swing.JButton switchBtn;
+    private javax.swing.JMenuItem switchItem;
     private javax.swing.JDialog waitDialog;
     // End of variables declaration//GEN-END:variables
 }

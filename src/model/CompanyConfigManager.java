@@ -66,12 +66,13 @@ public class CompanyConfigManager {
         if (companyList != null) {
             for (Element companyEl : companyList) {
                 CompanyConfig config = new CompanyConfig();
-                String key = companyEl.selectSingleNode("companyName").getText().trim();
-                String address = companyEl.selectSingleNode("address").getText().trim();
-                String account = companyEl.selectSingleNode("account").getText().trim();
-                String password = companyEl.selectSingleNode("password").getText().trim();
-                String SFTSYS = companyEl.selectSingleNode("SFTSYS").getText().trim();
-                String patchPath = companyEl.selectSingleNode("patchPath").getText().trim();
+                String key = (companyEl.selectSingleNode("companyName") != null) ? companyEl.selectSingleNode("companyName").getText().trim() : "";
+                String address = (companyEl.selectSingleNode("address") != null) ? companyEl.selectSingleNode("address").getText().trim() : "";
+                String account = (companyEl.selectSingleNode("account") != null) ? companyEl.selectSingleNode("account").getText().trim() : "";
+                String password = (companyEl.selectSingleNode("password") != null) ? companyEl.selectSingleNode("password").getText().trim() : "";
+                String SFTSYS = (companyEl.selectSingleNode("SFTSYS") != null) ? companyEl.selectSingleNode("SFTSYS").getText().trim() : "";
+                String patchPath = (companyEl.selectSingleNode("patchPath") != null) ? companyEl.selectSingleNode("patchPath").getText().trim() : "";
+                String ftpPath = (companyEl.selectSingleNode("ftpPath") != null) ? companyEl.selectSingleNode("ftpPath").getText().trim() : "";
 
                 config.setCompanyName(key);
                 config.setAddress(address);
@@ -79,6 +80,7 @@ public class CompanyConfigManager {
                 config.setPassword(password);
                 config.setSFTSYS(SFTSYS);
                 config.setPatchPath(patchPath);
+                config.setFtpPath(ftpPath);
                 companyConfigMap.put(key, config);
             }
         }
@@ -95,6 +97,7 @@ public class CompanyConfigManager {
             companyEl.addElement("password").setText(value.getPassword());
             companyEl.addElement("SFTSYS").setText(value.getSFTSYS());
             companyEl.addElement("patchPath").setText(value.getPatchPath());
+            companyEl.addElement("ftpPath").setText(value.getFtpPath());
         };
         return document;
     }
