@@ -5,6 +5,7 @@
  */
 package controller;
 
+import java.awt.event.KeyEvent;
 import java.io.File;
 import javax.swing.DefaultListModel;
 import javax.swing.JDialog;
@@ -35,8 +36,21 @@ public class FtpFileChooserPage extends javax.swing.JFrame {
         try {
             initComponents();
             ftpFileChooser = FtpFileChooser.getInstance();
-            initDefaultPath();
-            initFileTree();
+            try {
+                ftpFileChooser.connetFTP();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "錯誤", JOptionPane.ERROR_MESSAGE);
+            }
+            try {
+                ftpFileChooser.loginFTP();
+                ftpFileChooser.initInstance();
+                initDefaultPath();
+                initFileTree();
+                this.setVisible(true);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "錯誤", JOptionPane.ERROR_MESSAGE);
+                loginDialog.setVisible(true);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
             throw ex;
@@ -55,6 +69,13 @@ public class FtpFileChooserPage extends javax.swing.JFrame {
         downloadDialog = new javax.swing.JDialog();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
+        loginDialog = new javax.swing.JDialog();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        passwordField = new javax.swing.JPasswordField();
+        accountField = new javax.swing.JTextField();
+        loginBtn = new javax.swing.JButton();
         ftpPath = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
@@ -109,6 +130,87 @@ public class FtpFileChooserPage extends javax.swing.JFrame {
                     .addGap(0, 0, Short.MAX_VALUE)))
         );
 
+        loginDialog.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        loginDialog.setTitle("請輸入帳號密碼");
+        loginDialog.setBounds(new java.awt.Rectangle(500, 300, 550, 250));
+        loginDialog.setLocation(new java.awt.Point(500, 300));
+
+        jLabel3.setFont(new java.awt.Font("微軟正黑體", 0, 18)); // NOI18N
+        jLabel3.setText("帳號：");
+
+        jLabel4.setFont(new java.awt.Font("微軟正黑體", 0, 18)); // NOI18N
+        jLabel4.setText("密碼：");
+
+        passwordField.setFont(new java.awt.Font("微軟正黑體", 0, 18)); // NOI18N
+        passwordField.setNextFocusableComponent(loginBtn);
+        passwordField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                passwordFieldKeyPressed(evt);
+            }
+        });
+
+        accountField.setFont(new java.awt.Font("微軟正黑體", 0, 18)); // NOI18N
+        accountField.setFocusCycleRoot(true);
+        accountField.setNextFocusableComponent(passwordField);
+
+        loginBtn.setFont(new java.awt.Font("微軟正黑體", 0, 18)); // NOI18N
+        loginBtn.setText("登入");
+        loginBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loginBtnActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(29, 29, 29)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addGap(18, 18, 18)
+                        .addComponent(passwordField))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addGap(18, 18, 18)
+                        .addComponent(accountField, javax.swing.GroupLayout.PREFERRED_SIZE, 361, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(0, 66, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(loginBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(49, 49, 49)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(accountField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4))
+                .addGap(18, 18, 18)
+                .addComponent(loginBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout loginDialogLayout = new javax.swing.GroupLayout(loginDialog.getContentPane());
+        loginDialog.getContentPane().setLayout(loginDialogLayout);
+        loginDialogLayout.setHorizontalGroup(
+            loginDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(loginDialogLayout.createSequentialGroup()
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        loginDialogLayout.setVerticalGroup(
+            loginDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setLocation(new java.awt.Point(500, 300));
         setSize(new java.awt.Dimension(700, 400));
@@ -122,6 +224,8 @@ public class FtpFileChooserPage extends javax.swing.JFrame {
         jSplitPane1.setDividerLocation(350);
 
         directoryTree.setFont(new java.awt.Font("微軟正黑體", 0, 18)); // NOI18N
+        javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("FTP根目錄");
+        directoryTree.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
         directoryTree.setAutoscrolls(true);
         directoryTree.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         directoryTree.setLargeModel(true);
@@ -231,8 +335,10 @@ public class FtpFileChooserPage extends javax.swing.JFrame {
 
     private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
         try {
-            ftpFileChooser.logoutFTP();
-            ftpFileChooser.disconnectFTP();
+            if (ftpFileChooser.isConnected()) {
+                ftpFileChooser.logoutFTP();
+                ftpFileChooser.disconnectFTP();
+            }
             this.dispose();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -301,6 +407,37 @@ public class FtpFileChooserPage extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_fileListMouseReleased
 
+    private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginBtnActionPerformed
+        login();
+    }//GEN-LAST:event_loginBtnActionPerformed
+
+    private void passwordFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_passwordFieldKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            login();
+        }
+    }//GEN-LAST:event_passwordFieldKeyPressed
+
+    private void login() {
+        String account = accountField.getText();
+        String password = String.valueOf(passwordField.getPassword());
+        try {
+            if (ftpFileChooser.isConnected() && ftpFileChooser.isAvailable()) {
+                ftpFileChooser.setAcount(account);
+                ftpFileChooser.setPassword(password);
+                ftpFileChooser.loginFTP();
+                ftpFileChooser.initTreeModel();
+                loginDialog.dispose();
+                initDefaultPath();
+                initFileTree();
+                this.setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(new JFrame(), "連線中斷或無法取得連線", "錯誤", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "錯誤", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     private void initDefaultPath() {
         CompanyConfig config = CompanyConfigManager.getCompanyConfig();
         String defaultPath = "/SFT_code/patch/";
@@ -312,8 +449,10 @@ public class FtpFileChooserPage extends javax.swing.JFrame {
 
     private void initFileTree() throws Exception {
         DefaultTreeModel treeModel = ftpFileChooser.getTreeModel();
-        directoryTree.setModel(treeModel);
-        expandTree(ftpPath.getText());
+        if (treeModel != null) {
+            directoryTree.setModel(treeModel);
+            expandTree(ftpPath.getText());
+        }
     }
 
     private void expandTree(String path) {
@@ -322,17 +461,23 @@ public class FtpFileChooserPage extends javax.swing.JFrame {
         String[] pathArray = toStringArray(path);
         for (String pathName : pathArray) {
             if (visitNode.getChildCount() > 0) {
-                visitNode = getChildNode(visitNode, pathName);
-                treePath = new TreePath(visitNode.getPath());
-                directoryTree.expandPath(treePath);
-                directoryTree.setSelectionPath(treePath);
-                directoryTree.scrollPathToVisible(treePath);
+                if (!pathName.isEmpty()) {
+                    visitNode = getChildNode(visitNode, pathName);
+                    treePath = new TreePath(visitNode.getPath());
+                    directoryTree.expandPath(treePath);
+                    directoryTree.setSelectionPath(treePath);
+                    directoryTree.scrollPathToVisible(treePath);
+                }
             }
         }
     }
 
     private DefaultMutableTreeNode getChildNode(DefaultMutableTreeNode parent, String childValue) {
-        return (DefaultMutableTreeNode) directoryTree.getModel().getChild(parent, queryIndex(parent, childValue));
+        if (childValue.isEmpty()) {
+            return null;
+        } else {
+            return (DefaultMutableTreeNode) directoryTree.getModel().getChild(parent, queryIndex(parent, childValue));
+        }
     }
 
     private int queryIndex(DefaultMutableTreeNode parent, String target) {
@@ -362,7 +507,7 @@ public class FtpFileChooserPage extends javax.swing.JFrame {
             DefaultListModel dlm = new DefaultListModel();
             for (FTPFile file : files) {
                 if (file.isFile()) {
-                    dlm.addElement(new String(file.getName().getBytes("iso-8859-1"), "utf-8"));
+                    dlm.addElement(file.getName());
                 }
             }
             fileList.setModel(dlm);
@@ -386,7 +531,7 @@ public class FtpFileChooserPage extends javax.swing.JFrame {
                 CompanyConfigManager.getInstance().updateCompanyConfig(config, "add"); //暫存最近選的patch路徑
                 MainPage.patchPath.setText(file.getPath());
                 if (JOptionPane.showConfirmDialog(new JFrame(), "是否選擇自動切換?") == JOptionPane.OK_OPTION) {
-                    MainPage.switchBtn.doClick(2000);
+                    MainPage.switchBtn.doClick(1000);
                 }
             } else {
                 System.out.println("找不到" + file.getAbsolutePath() + "\\" + fileList.getSelectedValue());
@@ -412,6 +557,7 @@ public class FtpFileChooserPage extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField accountField;
     private javax.swing.JButton cancelBtn;
     private javax.swing.JButton comfirmBtn;
     public static javax.swing.JTree directoryTree;
@@ -420,10 +566,16 @@ public class FtpFileChooserPage extends javax.swing.JFrame {
     public static javax.swing.JTextField ftpPath;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSplitPane jSplitPane1;
+    private javax.swing.JButton loginBtn;
+    private javax.swing.JDialog loginDialog;
+    private javax.swing.JPasswordField passwordField;
     // End of variables declaration//GEN-END:variables
 }

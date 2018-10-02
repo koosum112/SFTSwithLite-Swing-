@@ -7,6 +7,9 @@ package model;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URLEncoder;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import org.apache.commons.io.IOUtils;
@@ -22,8 +25,8 @@ public class FtpFileChooser extends FTPClient {
 
     private static FtpFileChooser instance;
     private String server = "10.40.140.172";
-    private String acount = "dci";
-    private String password = "70614749";
+    private String acount = "dci"; //dci
+    private String password = "70614749"; //70614749
     private static final String ROOT_PATH = "/SFT_code/patch/";
     private DefaultTreeModel treeModel;
 
@@ -32,17 +35,7 @@ public class FtpFileChooser extends FTPClient {
             synchronized (FtpFileChooser.class) {
                 if (instance == null) {
                     instance = new FtpFileChooser();
-                    if (!instance.isConnected() || !instance.isAvailable()) {
-                        throw new Exception("FTP似乎斷線了...");
-                    }
                 }
-            }
-        } else {
-            if (!instance.isConnected() || !instance.isAvailable()) {
-                instance = new FtpFileChooser();
-            }
-            if (!instance.isConnected() || !instance.isAvailable()) {
-                throw new Exception("FTP罷工...再試個幾次，連不上就自己手動開環境吧 ㄎㄎ。");
             }
         }
         return instance;
@@ -50,17 +43,18 @@ public class FtpFileChooser extends FTPClient {
 
     private void checkConnetion() throws Exception {
         int reply = getReplyCode();
+
         if (!FTPReply.isPositiveCompletion(reply)) {
             disconnectFTP();
-            System.err.println("FTP server refused connection.");
+            JOptionPane.showMessageDialog(new JFrame(), "checkConnetion=" + reply + " : " + FTPReply.isPositiveCompletion(reply));
         }
     }
 
     //初始化 樹狀模型
-    public DefaultTreeModel initTreeModel() throws Exception {
+    public void initTreeModel() throws Exception {
         DefaultMutableTreeNode root = initRootNode();
         treeModel = new DefaultTreeModel(root);
-        return treeModel;
+        setTreeModel(treeModel);
     }
 
     //初始化 樹根
@@ -78,7 +72,7 @@ public class FtpFileChooser extends FTPClient {
         if (parent.getChildCount() == 0) {
             String[] directoryNames = listDirectoryNames(getTreePathString(parent));
             for (String directoryName : directoryNames) {
-                DefaultMutableTreeNode child = new DefaultMutableTreeNode(new String(directoryName.getBytes("iso-8859-1"), "utf-8"));
+                DefaultMutableTreeNode child = new DefaultMutableTreeNode(directoryName);
                 DefaultMutableTreeNode emptyDir = new DefaultMutableTreeNode("Pendding...");
                 child.add(emptyDir);
                 parent.add(child);
@@ -101,13 +95,16 @@ public class FtpFileChooser extends FTPClient {
         FTPFile[] directories = null;
         String[] dirctoryNames = null;
         try {
-            directories = listDirectories(path);
+             directories = listDirectories(path);
+            System.out.println(getReplyString());
+            checkConnetion();
             dirctoryNames = new String[directories.length];
             for (int i = 0; i < directories.length; i++) {
                 dirctoryNames[i] = directories[i].getName();
             }
         } catch (Exception ex) {
             ex.printStackTrace();
+            JOptionPane.showMessageDialog(new JFrame(), "listDirectoryNames error: " + ex.getMessage());
             throw new Exception("查看資料夾清單失敗:" + ex.getMessage());
         }
         return dirctoryNames;
@@ -163,12 +160,15 @@ public class FtpFileChooser extends FTPClient {
     }
 
     private FtpFileChooser() throws Exception {
+        setAutodetectUTF8(true);
+    }
+
+    public void initInstance() throws Exception {
         try {
-            connetFTP();
-            loginFTP();
             setBufferSize(1024);
             setFileType(BINARY_FILE_TYPE);
-            setTreeModel(initTreeModel());
+            enterLocalPassiveMode(); // 被動模式，要有這個才不會被卡巴擋住
+            initTreeModel();
         } catch (Exception ex) {
             ex.printStackTrace();
             throw new Exception("FtpFileChooser初始化失敗:" + ex.getMessage());
@@ -176,9 +176,9 @@ public class FtpFileChooser extends FTPClient {
     }
 
     // 連線至FTP
-    private void connetFTP() throws Exception {
+    public void connetFTP() throws Exception {
         try {
-            connect(getServer());
+            connect(getServer(), 21);
             System.out.print(getReplyString());
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -193,22 +193,15 @@ public class FtpFileChooser extends FTPClient {
     }
 
     // 登入FTP
-    private void loginFTP() throws Exception {
+    public void loginFTP() throws Exception {
         try {
-            if (!login(getAcount(), getPassword())) {
-                System.out.print(getReplyString());
-                throw new Exception("登入失敗");
-            } else {
-                System.out.print(getReplyString());
+            if (getAcount().isEmpty() || getPassword().isEmpty()) {
+                throw new Exception("請輸入帳號密碼");
+            } else if (!login(getAcount(), getPassword())) {
+                throw new Exception("登入失敗:" + getReplyString());
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            try {
-                disconnectFTP();
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new Exception(ex.getMessage() + " \n" + e.getMessage());
-            }
             throw new Exception(ex.getMessage());
         }
     }
@@ -240,7 +233,6 @@ public class FtpFileChooser extends FTPClient {
         boolean isSuccess = false;
         try {
             fos = new FileOutputStream(dist);
-//            System.out.println("從FTP路徑:" + src + "下載至" + dist);
             isSuccess = retrieveFile(src, fos);
             System.out.print(getReplyString());
         } catch (IOException e) {
