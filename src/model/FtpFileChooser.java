@@ -7,7 +7,6 @@ package model;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URLEncoder;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -26,10 +25,10 @@ public class FtpFileChooser extends FTPClient {
     private static FtpFileChooser instance;
     private String server = "10.40.140.172";
     private String acount = "dci"; //dci
-    private String password = "70614749"; //70614749
+    private String password = "7061479"; //70614749
     private static final String ROOT_PATH = "/SFT_code/patch/";
     private DefaultTreeModel treeModel;
-
+    
     public static FtpFileChooser getInstance() throws Exception {
         if (instance == null) {
             synchronized (FtpFileChooser.class) {
@@ -95,8 +94,9 @@ public class FtpFileChooser extends FTPClient {
         FTPFile[] directories = null;
         String[] dirctoryNames = null;
         try {
-             directories = listDirectories(path);
+            directories = listDirectories(path);
             System.out.println(getReplyString());
+            SFTSwitchLogger.doFTPLog(getReplyString());
             checkConnetion();
             dirctoryNames = new String[directories.length];
             for (int i = 0; i < directories.length; i++) {
@@ -104,6 +104,7 @@ public class FtpFileChooser extends FTPClient {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
+            SFTSwitchLogger.doFTPLog(ex.getMessage());
             JOptionPane.showMessageDialog(new JFrame(), "listDirectoryNames error: " + ex.getMessage());
             throw new Exception("查看資料夾清單失敗:" + ex.getMessage());
         }
@@ -115,6 +116,7 @@ public class FtpFileChooser extends FTPClient {
         String[] dirctoryNames = null;
         try {
             directories = listDirectories();
+            SFTSwitchLogger.doFTPLog(getReplyString());
             dirctoryNames = new String[directories.length];
             for (int i = 0; i < directories.length; i++) {
                 dirctoryNames[i] = directories[i].getName();
@@ -130,6 +132,7 @@ public class FtpFileChooser extends FTPClient {
         String[] fileNames = null;
         try {
             fileNames = listNames();
+            SFTSwitchLogger.doFTPLog(getReplyString());
         } catch (Exception ex) {
             ex.printStackTrace();
             throw new Exception("查看檔案清單失敗:" + ex.getMessage());
@@ -141,6 +144,7 @@ public class FtpFileChooser extends FTPClient {
         String[] fileNames = null;
         try {
             fileNames = listNames(path);
+            SFTSwitchLogger.doFTPLog(getReplyString());
         } catch (Exception ex) {
             ex.printStackTrace();
             throw new Exception("查看檔案清單失敗:" + ex.getMessage());
@@ -152,6 +156,7 @@ public class FtpFileChooser extends FTPClient {
         FTPFile[] fileNames = null;
         try {
             fileNames = listFiles(path);
+            SFTSwitchLogger.doFTPLog(getReplyString());
         } catch (Exception ex) {
             ex.printStackTrace();
             throw new Exception("查看檔案清單失敗:" + ex.getMessage());
@@ -179,6 +184,7 @@ public class FtpFileChooser extends FTPClient {
     public void connetFTP() throws Exception {
         try {
             connect(getServer(), 21);
+            SFTSwitchLogger.doFTPLog(getReplyString());
             System.out.print(getReplyString());
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -200,6 +206,7 @@ public class FtpFileChooser extends FTPClient {
             } else if (!login(getAcount(), getPassword())) {
                 throw new Exception("登入失敗:" + getReplyString());
             }
+            SFTSwitchLogger.doFTPLog(getReplyString());
         } catch (Exception ex) {
             ex.printStackTrace();
             throw new Exception(ex.getMessage());
@@ -215,6 +222,7 @@ public class FtpFileChooser extends FTPClient {
             } else {
                 System.out.print(getReplyString());
             }
+            SFTSwitchLogger.doFTPLog(getReplyString());
         } catch (Exception ex) {
             ex.printStackTrace();
             try {
@@ -248,7 +256,6 @@ public class FtpFileChooser extends FTPClient {
     public void disconnectFTP() throws Exception {
         try {
             disconnect();
-            System.out.print(getReplyString());
         } catch (Exception ex) {
             ex.printStackTrace();
             throw new RuntimeException("關閉FTP連接發生異常！", ex);

@@ -5,6 +5,7 @@
  */
 package model;
 
+import controller.FtpFileChooserPage;
 import controller.MainPage;
 
 /**
@@ -15,5 +16,10 @@ public class SFTSwitchLogger{
     public static void doLog(String msg) {
        MainPage.outputTextArea.append(msg + "\n");
        MainPage.outputTextArea.setCaretPosition(MainPage.outputTextArea.getDocument().getLength());
+    }
+    
+     public static void doFTPLog(String msg) {
+       FtpFileChooserPage.outputTextArea.append(msg + "\n");
+       FtpFileChooserPage.outputTextArea.setCaretPosition(FtpFileChooserPage.outputTextArea.getDocument().getLength());
     }
 }
