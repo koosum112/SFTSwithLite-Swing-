@@ -210,6 +210,7 @@ public class AddCompanyPage extends javax.swing.JFrame {
             companyJson.put("password", password.getText());
             companyJson.put("SFTSYS", SFTSYS.getText());
             companyJson.put("patchPath", "");
+            companyJson.put("ftpPath", "");
             String msg = beforeSaveCheck();
             if (msg.isEmpty()) {
                 CompanyConfigManager ccm = CompanyConfigManager.getInstance();

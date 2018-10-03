@@ -399,7 +399,7 @@ public class MainPage extends javax.swing.JFrame {
     private void browseBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseBtnActionPerformed
 
         try {
-            String msg = beforeSwitchCheck();
+            String msg = isSelectedCompanyCheck();
             if (msg.isEmpty()) {
                 File file = null;
                 File sourceFile = getDirectoryFile(patchPath.getText()); //介面路徑
@@ -451,17 +451,22 @@ public class MainPage extends javax.swing.JFrame {
     }//GEN-LAST:event_addBtnActionPerformed
     //刪除公司別
     private void delBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_delBtnActionPerformed
+
         try {
-            CompanyConfig config = CompanyConfigManager.getCompanyConfig();
-            CompanyConfigManager.getInstance().updateCompanyConfig(config, "delete");
-            loadComboBoxData();
+            String msg = isSelectedCompanyCheck();
+            if (msg.isEmpty()) {
+                CompanyConfig config = CompanyConfigManager.getCompanyConfig();
+                CompanyConfigManager.getInstance().updateCompanyConfig(config, "delete");
+                loadComboBoxData();
+            } else {
+                throw new Exception(msg);
+            }
         } catch (Exception ex) {
-            ex.printStackTrace();
             JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "錯誤", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_delBtnActionPerformed
 
-    //JBOSS設定
+//JBOSS設定
     private void settingBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingBtnActionPerformed
         new AddJBossPage().setVisible(true);
     }//GEN-LAST:event_settingBtnActionPerformed
@@ -508,7 +513,7 @@ public class MainPage extends javax.swing.JFrame {
 
     private void ftpBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ftpBtnActionPerformed
         try {
-            String msg = beforeSwitchCheck();
+            String msg = isSelectedCompanyCheck();
             if (msg.isEmpty()) {
                 new FtpFileChooserPage();
             } else {
@@ -622,7 +627,17 @@ public class MainPage extends javax.swing.JFrame {
         delBtn.setEnabled(b);
         companyCombo.setEnabled(b);
         jBossList.setEnabled(b);
-        ftpBtn.setEnabled(b);           
+        ftpBtn.setEnabled(b);
+    }
+
+    private String isSelectedCompanyCheck() {
+        String msg = "";
+        if (jBossList.getSelectedIndex() == -1) {
+            msg = "尚未切換 JBoss 的 Port 號!";
+        } else if (companyCombo.getSelectedIndex() == -1) {
+            msg = "尚未選擇公司別!";
+        }
+        return msg;
     }
 
     private String beforeSwitchCheck() {
