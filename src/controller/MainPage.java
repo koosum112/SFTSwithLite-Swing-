@@ -5,10 +5,12 @@
  */
 package controller;
 
+import java.awt.Toolkit;
 import java.awt.event.ItemEvent;
 import java.io.File;
 import java.util.HashMap;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -123,6 +125,7 @@ public class MainPage extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("SFTSwitchLite");
+        setIconImage(new ImageIcon("sourceFile\\nintendo-switch.png").getImage());
         setLocation(new java.awt.Point(350, 200));
         setResizable(false);
 

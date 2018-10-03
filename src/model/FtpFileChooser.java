@@ -5,8 +5,13 @@
  */
 package model;
 
+import controller.FtpFileChooserPage;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -25,10 +30,10 @@ public class FtpFileChooser extends FTPClient {
     private static FtpFileChooser instance;
     private String server = "10.40.140.172";
     private String acount = "dci"; //dci
-    private String password = "7061479"; //70614749
+    private String password = "70614749"; //70614749
     private static final String ROOT_PATH = "/SFT_code/patch/";
     private DefaultTreeModel treeModel;
-    
+
     public static FtpFileChooser getInstance() throws Exception {
         if (instance == null) {
             synchronized (FtpFileChooser.class) {
@@ -235,19 +240,54 @@ public class FtpFileChooser extends FTPClient {
         }
     }
 
+//    // 下載
+//    public boolean downloadFTPFile(String src, String dist) throws Exception {
+//        FileOutputStream fos = null;
+//        boolean isSuccess = false;
+//        try {
+//            fos = new FileOutputStream(dist);
+//            isSuccess = retrieveFile(src, fos);
+//            System.out.print(getReplyString());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            throw new RuntimeException("FTP用戶端出錯！", e);
+//        } finally {
+//            IOUtils.closeQuietly(fos);
+//            return isSuccess;
+//        }
+//    }
     // 下載
     public boolean downloadFTPFile(String src, String dist) throws Exception {
-        FileOutputStream fos = null;
+
         boolean isSuccess = false;
+        InputStream initialStream = null;
+        OutputStream outStream = null;
         try {
-            fos = new FileOutputStream(dist);
-            isSuccess = retrieveFile(src, fos);
-            System.out.print(getReplyString());
+            System.out.print("initialStream...");
+            FTPFile[] target = listFTPFiles(src);
+            long targetSize = target[0].getSize();        
+            initialStream = retrieveFileStream(src);
+             System.out.print(getReplyString());
+            System.out.println("get!");
+            File targetFile = new File(dist);
+            outStream = new FileOutputStream(targetFile);
+            byte[] buffer = new byte[8 * 1024];
+            int bytesRead;
+            long total = 0;
+            while ((bytesRead = initialStream.read(buffer)) != -1) {
+                outStream.write(buffer, 0, bytesRead);
+                total += bytesRead;
+                FtpFileChooserPage.progressBar.setValue(Math.round(((float)total/(float)targetSize) * 100));
+            }
+            isSuccess = true;
+            IOUtils.closeQuietly(initialStream);
+            IOUtils.closeQuietly(outStream);
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("FTP用戶端出錯！", e);
         } finally {
-            IOUtils.closeQuietly(fos);
+            IOUtils.closeQuietly(initialStream);
+            IOUtils.closeQuietly(outStream);
             return isSuccess;
         }
     }

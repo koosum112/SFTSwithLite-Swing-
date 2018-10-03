@@ -90,16 +90,18 @@ public class FtpFileChooserPage extends javax.swing.JFrame {
         directoryTree = new javax.swing.JTree();
         jScrollPane2 = new javax.swing.JScrollPane();
         fileList = new javax.swing.JList();
+        progressBar = new javax.swing.JProgressBar();
 
         downloadDialog.setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        downloadDialog.setTitle("下載中....");
         downloadDialog.setAlwaysOnTop(true);
         downloadDialog.setBounds(new java.awt.Rectangle(0, 0, 0, 0));
         downloadDialog.setIconImages(null);
         downloadDialog.setLocation(new java.awt.Point(900, 500));
+        downloadDialog.setSize(new java.awt.Dimension(450, 160));
 
         jLabel2.setFont(new java.awt.Font("微軟正黑體", 0, 18)); // NOI18N
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel2.setText("下載中，別猴急...");
         jLabel2.setToolTipText("");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -110,7 +112,9 @@ public class FtpFileChooserPage extends javax.swing.JFrame {
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 31, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout downloadDialogLayout = new javax.swing.GroupLayout(downloadDialog.getContentPane());
@@ -217,7 +221,7 @@ public class FtpFileChooserPage extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("請選擇Patch");
-        setLocation(new java.awt.Point(500, 300));
+        setLocation(new java.awt.Point(450, 250));
         setSize(new java.awt.Dimension(700, 400));
 
         ftpPath.setFont(new java.awt.Font("微軟正黑體", 0, 14)); // NOI18N
@@ -301,12 +305,16 @@ public class FtpFileChooserPage extends javax.swing.JFrame {
 
         jSplitPane2.setLeftComponent(jSplitPane1);
 
+        progressBar.setStringPainted(true);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jSplitPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 880, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(progressBar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jSplitPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 880, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(cancelBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -322,8 +330,10 @@ public class FtpFileChooserPage extends javax.swing.JFrame {
                         .addComponent(cancelBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(comfirmBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 581, Short.MAX_VALUE))
-                .addGap(12, 12, 12))
+                    .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 573, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(4, 4, 4))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -337,7 +347,7 @@ public class FtpFileChooserPage extends javax.swing.JFrame {
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ftpPath, javax.swing.GroupLayout.PREFERRED_SIZE, 878, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())
+                        .addContainerGap(72, Short.MAX_VALUE))
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
@@ -405,7 +415,12 @@ public class FtpFileChooserPage extends javax.swing.JFrame {
 
                 if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
                     file = fileChooser.getSelectedFile();
-                    downloadFile(ftpPath.getText(), file.getAbsolutePath(), downloadDialog);
+                    CompanyConfig config = CompanyConfigManager.getCompanyConfig();
+                    config.setPatchPath(file.getPath());
+                    config.setFtpPath(ftpPath.getText());
+                    CompanyConfigManager.getInstance().updateCompanyConfig(config, "add"); //暫存最近選的patch路徑
+                    MainPage.patchPath.setText(file.getPath());
+                    downloadFile();
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -437,7 +452,12 @@ public class FtpFileChooserPage extends javax.swing.JFrame {
             login();
         }
     }//GEN-LAST:event_passwordFieldKeyPressed
-
+    private void setBtnEnabled(boolean b) {
+        comfirmBtn.setEnabled(b);
+        cancelBtn.setEnabled(b);
+        directoryTree.setEnabled(b);
+        fileList.setEnabled(b);    
+    }
     private void login() {
         String account = accountField.getText();
         String password = String.valueOf(passwordField.getPassword());
@@ -537,30 +557,36 @@ public class FtpFileChooserPage extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(new JFrame(), ex.getMessage());
         }
     }
-
-    private void downloadFile(String ftpPath, String distPath, JDialog waitDialog) throws Exception {
-        waitDialog.setVisible(true);
-        if (ftpFileChooser.downloadFTPFile(ftpPath, distPath)) {
-            waitDialog.dispose();
-            JOptionPane.showMessageDialog(new JFrame(), "下載成功");
-            File file = new File(distPath);
-            if (file.exists()) {
-                this.dispose();
-                CompanyConfig config = CompanyConfigManager.getCompanyConfig();
-                config.setPatchPath(file.getPath());
-                config.setFtpPath(ftpPath);
-                CompanyConfigManager.getInstance().updateCompanyConfig(config, "add"); //暫存最近選的patch路徑
-                MainPage.patchPath.setText(file.getPath());
-                if (JOptionPane.showConfirmDialog(new JFrame(), "是否選擇自動切換?") == JOptionPane.OK_OPTION) {
-                    MainPage.switchBtn.doClick(1000);
+    
+    private void downloadFile() throws Exception {
+        FtpFileChooserPage.downloadDialog.setVisible(true);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                     CompanyConfig config = CompanyConfigManager.getCompanyConfig();
+                    if (ftpFileChooser.downloadFTPFile(config.getFtpPath(), config.getPatchPath())) {
+                        FtpFileChooserPage.downloadDialog.dispose();
+                        JOptionPane.showMessageDialog(new JFrame(), "下載成功");
+                        File file = new File(config.getPatchPath());
+                        if (file.exists()) {
+                            FtpFileChooserPage.this.dispose();
+                            if (JOptionPane.showConfirmDialog(new JFrame(), "是否選擇自動切換?") == JOptionPane.OK_OPTION) {
+                                MainPage.switchBtn.doClick(1000);
+                            }
+                        } else {
+                            System.out.println("找不到" + file.getAbsolutePath() + "\\" + fileList.getSelectedValue());
+                        }
+                    } else {
+                        FtpFileChooserPage.downloadDialog.dispose();
+                        JOptionPane.showMessageDialog(new JFrame(), "下載失敗", "錯誤", JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "錯誤", JOptionPane.ERROR_MESSAGE);
                 }
-            } else {
-                System.out.println("找不到" + file.getAbsolutePath() + "\\" + fileList.getSelectedValue());
             }
-        } else {
-            waitDialog.dispose();
-            JOptionPane.showMessageDialog(new JFrame(), "下載失敗", "錯誤", JOptionPane.ERROR_MESSAGE);
-        }
+        }).start();
+
     }
 
     //解析路徑，不存在則取的空字串
@@ -582,7 +608,7 @@ public class FtpFileChooserPage extends javax.swing.JFrame {
     private javax.swing.JButton cancelBtn;
     private javax.swing.JButton comfirmBtn;
     public static javax.swing.JTree directoryTree;
-    private javax.swing.JDialog downloadDialog;
+    public static javax.swing.JDialog downloadDialog;
     public static javax.swing.JList fileList;
     public static javax.swing.JTextField ftpPath;
     private javax.swing.JLabel jLabel1;
@@ -602,5 +628,6 @@ public class FtpFileChooserPage extends javax.swing.JFrame {
     private javax.swing.JDialog loginDialog;
     public static javax.swing.JTextArea outputTextArea;
     private javax.swing.JPasswordField passwordField;
+    public static javax.swing.JProgressBar progressBar;
     // End of variables declaration//GEN-END:variables
 }
