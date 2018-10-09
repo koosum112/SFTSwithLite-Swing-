@@ -85,12 +85,16 @@ public class FtpFileChooser extends FTPClient {
     }
 
     //取得節點的完整路徑
-    public static String getTreePathString(DefaultMutableTreeNode node) throws Exception {
+    public static String getTreePathString(DefaultMutableTreeNode node) {
         String remoteDir = "";
-        for (int index = 1; index < node.getPath().length; index++) {
-            if (!node.getPath()[index].toString().equals("Pendding...")) {
-                remoteDir = remoteDir + node.getPath()[index].toString() + "/";
+        try {
+            for (int index = 1; index < node.getPath().length; index++) {
+                if (!node.getPath()[index].toString().equals("Pendding...")) {
+                    remoteDir = remoteDir + node.getPath()[index].toString() + "/";
+                }
             }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
         return ROOT_PATH + remoteDir;
     }
@@ -265,9 +269,9 @@ public class FtpFileChooser extends FTPClient {
         try {
             System.out.print("initialStream...");
             FTPFile[] target = listFTPFiles(src);
-            long targetSize = target[0].getSize();        
+            long targetSize = target[0].getSize();
             initialStream = retrieveFileStream(src);
-             System.out.print(getReplyString());
+            System.out.print(getReplyString());
             System.out.println("get!");
             File targetFile = new File(dist);
             outStream = new FileOutputStream(targetFile);
@@ -277,7 +281,7 @@ public class FtpFileChooser extends FTPClient {
             while ((bytesRead = initialStream.read(buffer)) != -1) {
                 outStream.write(buffer, 0, bytesRead);
                 total += bytesRead;
-                FtpFileChooserPage.progressBar.setValue(Math.round(((float)total/(float)targetSize) * 100));
+                FtpFileChooserPage.progressBar.setValue(Math.round(((float) total / (float) targetSize) * 100));
             }
             isSuccess = true;
             IOUtils.closeQuietly(initialStream);

@@ -437,7 +437,7 @@ public class FtpFileChooserPage extends javax.swing.JFrame {
     private void fileListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fileListMouseReleased
         TreePath selectedPath = directoryTree.getSelectionPath();
         DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) selectedPath.getLastPathComponent();
-        String folderPath = ftpPath.getText();
+        String folderPath = FtpFileChooser.getTreePathString(selectedNode);
         if (!fileList.isSelectionEmpty()) {
             ftpPath.setText(folderPath + fileList.getSelectedValue());
         }
