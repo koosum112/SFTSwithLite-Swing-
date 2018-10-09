@@ -5,7 +5,6 @@
  */
 package controller;
 
-import java.awt.Toolkit;
 import java.awt.event.ItemEvent;
 import java.io.File;
 import java.util.HashMap;
@@ -51,6 +50,7 @@ public class MainPage extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jBossListPopupMenu = new javax.swing.JPopupMenu();
         switchItem = new javax.swing.JMenuItem();
+        openLog = new javax.swing.JMenuItem();
         mainPanel = new javax.swing.JPanel();
         jSplitPane1 = new javax.swing.JSplitPane();
         jSplitPane2 = new javax.swing.JSplitPane();
@@ -122,6 +122,14 @@ public class MainPage extends javax.swing.JFrame {
             }
         });
         jBossListPopupMenu.add(switchItem);
+
+        openLog.setText("開啟Log路徑");
+        openLog.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                openLogActionPerformed(evt);
+            }
+        });
+        jBossListPopupMenu.add(openLog);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("SFTSwitchLite");
@@ -525,7 +533,16 @@ public class MainPage extends javax.swing.JFrame {
     }//GEN-LAST:event_ftpBtnActionPerformed
 
     private void switchItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_switchItemActionPerformed
-        doRunbat();
+        try {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    doRunbat();
+                }
+            }).start();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "錯誤", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_switchItemActionPerformed
 
     private void jBossListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jBossListMouseReleased
@@ -533,6 +550,10 @@ public class MainPage extends javax.swing.JFrame {
             jBossListPopupMenu.show(this, evt.getX(), evt.getY());
         }
     }//GEN-LAST:event_jBossListMouseReleased
+
+    private void openLogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openLogActionPerformed
+        openLog();
+    }//GEN-LAST:event_openLogActionPerformed
     //系統初始化
     private void initSystem() {
         try {
@@ -619,6 +640,20 @@ public class MainPage extends javax.swing.JFrame {
         }
     }
 
+    private void openLog() {
+        String jboss_home = JBossConfigManager.getJbossConfig().getJBOSS_HOME();
+        try {
+            File root = new File(jboss_home);
+            if (root.exists()) {
+                CmdProxy.callCmd("Explorer.exe " + root.getParent() + "\\SFT\\WebContent\\log");
+            } else {
+                throw new Exception("查無JBoss路徑。");
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "錯誤", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     private void setBtnEnabled(boolean b) {
         addBtn.setEnabled(b);
         switchBtn.setEnabled(b);
@@ -678,6 +713,7 @@ public class MainPage extends javax.swing.JFrame {
     private javax.swing.JSplitPane jSplitPane5;
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JPanel mainPanel;
+    private javax.swing.JMenuItem openLog;
     public static javax.swing.JTextArea outputTextArea;
     public static javax.swing.JTextField patchPath;
     public static javax.swing.JProgressBar progressBar;
